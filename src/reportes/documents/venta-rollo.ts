@@ -53,7 +53,7 @@ export const receiptReport = (venta: Venta): TDocumentDefinitions => {
           stack: [
             { text: `Orden No.: ${venta.codigo}`, style: 'highlightText', alignment: 'left', margin: [-10, 0, 0, 0] },
             { text: `Pago: ${venta.tipo_pago}`, style: 'bodyText', alignment: 'left', margin: [-10, 0, 0, 0] },
-            { text: `Celular: 62621393`, style: 'boldText', alignment: 'left', margin: [-10, 0, 0, 0] },
+            { text: `Celular: 72060447`, style: 'boldText', alignment: 'left', margin: [-10, 0, 0, 0] },
           ],
           margin: [0, 0, 0, 2],
         },
