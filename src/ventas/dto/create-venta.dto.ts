@@ -32,6 +32,10 @@ export class CreateVentaDto {
   @IsString()
   vendedor: string;
 
+  @IsString()
+  @IsOptional()
+  glosa?: string;
+
   // @IsString()
   // cajaId: string;
 
@@ -63,7 +67,7 @@ export class CreateVentaDto {
   @IsNumber()
   descuento: number;
 
-  @IsEnum(['EFECTIVO', 'QR', 'TRANSFERENCIA', 'QR-EFECTIVO'])
+  @IsEnum(['EFECTIVO', 'QR', 'TARJETA', 'QR-EFECTIVO', 'COM-BOL'])
   tipo_pago: string;
 
 

@@ -66,7 +66,10 @@ export class Venta {
   @Column('text', { nullable: true })
   ref: string;
 
-  @Column({ type: 'enum', enum: ['EFECTIVO', 'QR', 'TRANSFERENCIA', 'QR-EFECTIVO'], default: 'EFECTIVO' })
+  @Column('text', { nullable: true })
+  glosa: string;
+
+  @Column({ type: 'enum', enum: ['EFECTIVO', 'QR', 'TARJETA', 'QR-EFECTIVO', 'COM-BOL'], default: 'EFECTIVO' })
   tipo_pago: string;
 
 
@@ -81,7 +84,7 @@ export class Venta {
   // Relación muchos a uno
   @ManyToOne(() => Caja, (caja) => caja.ventas, {
     nullable: true,
-    onDelete:'SET NULL'
+    onDelete: 'SET NULL'
   })
   caja: Caja;
 }

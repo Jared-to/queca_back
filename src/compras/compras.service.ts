@@ -309,7 +309,7 @@ export class ComprasService {
           if (diferencia === 0 && hayCambioPrecio) {
             await this.productoService.cambiarPrecioProductoTransaccion(
               inventario.product.id,
-              item.precioCompra,
+              item.precioVenta,
               item.precioMinVenta,
               queryRunner,
             );
@@ -395,7 +395,7 @@ export class ComprasService {
           if (hayCambioPrecio) {
             await this.productoService.cambiarPrecioProductoTransaccion(
               inventario.product.id,
-              item.precioCompra,
+              item.precioVenta,
               item.precioMinVenta,
               queryRunner,
             );

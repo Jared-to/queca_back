@@ -234,6 +234,7 @@ Revisa en *https://almacen-luz.comercio.bo*
 
       // Actualizar campos de la venta (se actualiza el almacen al nuevo)
       Object.assign(venta, {
+        glosa: ventaData.glosa,
         total: ventaData.total,
         montoRecibido: ventaData?.montoRecibido || null,
         subtotal: ventaData.subtotal,
@@ -342,6 +343,7 @@ Revisa en *https://almacen-luz.comercio.bo*
     if (fechaInicio === 'xx' && fechaFin === 'xx') {
       return this.ventasRepository.find({
         where: user && !isAdmin ? { vendedor: { id: user.id } } : {},
+        order: { fecha: 'DESC' },
         relations: ['almacen', 'detalles', 'detalles.inventario', 'detalles.inventario.product', 'detalles.inventario.product.categoria', 'vendedor', 'caja'],
       });
     }
@@ -370,6 +372,7 @@ Revisa en *https://almacen-luz.comercio.bo*
 
     return this.ventasRepository.find({
       where: whereConditions,
+      order: { fecha: 'DESC' },
       relations: ['almacen', 'detalles', 'detalles.inventario', 'detalles.inventario.product', 'detalles.inventario.product.categoria', 'vendedor', 'caja'],
     });
   }

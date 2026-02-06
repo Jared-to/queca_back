@@ -46,7 +46,7 @@ export class GastosService {
     //   throw new Error(' Caja  no encontrados.');
     // }
 
-    const almacenes=await this.almacenService.findAll() //tomar el primero
+    const almacenes = await this.almacenService.findAll() //tomar el primero
 
     const gasto = this.gastoRepository.create({
       ...rest,
@@ -115,7 +115,8 @@ Revisalo en *https://almacen-luz.comercio.bo*
     if (fechaInicio === 'xx' && fechaFin === 'xx') {
       return this.gastoRepository.find({
         where: user.roles[0] === 'admin' ? {} : { usuario: { id: user.id } },
-        relations: ['usuario', 'categoria', 'caja','almacen'],
+        order: { fecha: 'DESC' },
+        relations: ['usuario', 'categoria', 'caja', 'almacen'],
       });
     }
 
@@ -142,7 +143,8 @@ Revisalo en *https://almacen-luz.comercio.bo*
     }
     return this.gastoRepository.find({
       where: whereConditions,
-      relations: ['usuario', 'categoria','caja','almacen'],
+      order: { fecha: 'DESC' },
+      relations: ['usuario', 'categoria', 'caja', 'almacen'],
     });
   }
 
@@ -192,11 +194,4 @@ Revisalo en *https://almacen-luz.comercio.bo*
   async getGastosCount(): Promise<number> {
     return this.gastoRepository.count();
   }
-}
-function formatDateToYMD(date: string | Date): string {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0'); // meses inician en 0
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }

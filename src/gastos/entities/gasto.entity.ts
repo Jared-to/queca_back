@@ -36,7 +36,7 @@ export class Gasto {
   @Column('float')
   monto: number;
 
-  @Column({ type: 'enum', enum: ['EFECTIVO', 'QR', 'TRANSFERENCIA'], default: 'EFECTIVO' })
+  @Column({ type: 'enum', enum: ['EFECTIVO', 'QR', 'TARJETA',], default: 'EFECTIVO' })
   tipo_pago: string;
 
   // Relación muchos a uno
