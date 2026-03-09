@@ -95,7 +95,7 @@ Revisalo en *https://almacen-luz.comercio.bo*
 
     // Emitir evento asíncrono SIN bloquear la respuesta
     this.eventEmitter.emitAsync('gasto.creada', {
-      numero: process.env.WSP_NUM,
+      sistema_url: process.env.URL_SIS,
       mensaje,
     });
     return gastosG;

@@ -136,7 +136,7 @@ export class ExcelController {
         'attachment; filename="Reporte-inventario.xlsx"',
       );
 
-      response.download(filePath, 'Reporte-ventas.xlsx', (err) => {
+      response.download(filePath, 'Reporte-inventario.xlsx', (err) => {
         if (err) {
           console.error('Error al descargar el archivo:', err);
           response.status(500).send('Error al generar el reporte.');

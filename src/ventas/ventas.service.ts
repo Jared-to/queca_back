@@ -130,7 +130,7 @@ Revisa en *https://almacen-luz.comercio.bo*
 
       // Emitir evento asíncrono SIN bloquear la respuesta
       this.eventEmitter.emitAsync('venta.creada', {
-        numero: process.env.WSP_NUM,
+        sistema_url: process.env.URL_SIS,
         mensaje,
       });
 
@@ -634,7 +634,7 @@ Revisa en *https://almacen-luz.comercio.bo*
         productoId: id_product,
         sku,
         costoUnit: inventario.costoUnit,
-        fechaExpiracion:inventario.fechaExpiracion
+        fechaExpiracion: inventario.fechaExpiracion
       }, queryRunner);
       await this.movimientosService.registrarSalidaTransaccional({
         almacenId: almacen,
@@ -652,7 +652,7 @@ Revisa en *https://almacen-luz.comercio.bo*
         productoId: id_product,
         sku,
         costoUnit: inventario.costoUnit,
-        fechaExpiracion:inventario.fechaExpiracion
+        fechaExpiracion: inventario.fechaExpiracion
       }, queryRunner);
       await this.movimientosService.registrarIngresoTransaccional({
         almacenId: almacen,

@@ -5,12 +5,12 @@ import axios from 'axios';
 @Injectable()
 export class VentaListener {
   @OnEvent('venta.creada', { async: true }) // async: true = no bloquea
-  async handleVentaCreada(payload: { numero: string; mensaje: string }) {
+  async handleVentaCreada(payload: { sistema_url: string; mensaje: string }) {
     try {
       await axios.post(
-        `http://147.79.107.102:3000/whatsapp-message/api/whatsapp/enviar`,
+        `http://147.79.107.102:4009/sistema-control/api/bot-telegram`,
         {
-          numero: payload.numero,
+          sistema_url: payload.sistema_url,
           mensaje: payload.mensaje,
         },
         {

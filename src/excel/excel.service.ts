@@ -511,7 +511,7 @@ export class ExcelService {
   async generarReporteInventario(inventario: Inventario[]) {
     const fechaHoy = new Date().toISOString().split('T')[0];
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Reporte Ventas');
+    const worksheet = workbook.addWorksheet('Reporte Inventario');
 
     const estiloTitulo = {
       font: { bold: true, size: 16, color: { argb: 'FFFFFFFF' } },
