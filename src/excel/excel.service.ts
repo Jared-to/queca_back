@@ -564,7 +564,7 @@ export class ExcelService {
 
     // Encabezados
     const encabezados = [
-      '#', 'PRODUCTO', 'MARCA', 'STOCK', 'MEDIDA', 'CATEGORIA', 'ALMACEN', 'COSTO UNIT', 'EXPIRACION'
+      'CODIGO', 'PRODUCTO', 'MARCA', 'STOCK', 'MEDIDA', 'CATEGORIA', 'ALMACEN', 'COSTO UNIT', 'EXPIRACION','SKU'
     ];
     worksheet.addRow([]);
     const encabezadoRow = worksheet.addRow(encabezados);
@@ -575,7 +575,7 @@ export class ExcelService {
     // Datos
     inventario.forEach((item, index) => {
       const row = worksheet.addRow([
-        index + 1,
+        item.product.codigo.slice(1),
         item.product.nombre,
         item.product.marca,
         item.stock,
@@ -584,6 +584,7 @@ export class ExcelService {
         item.almacen.nombre,
         item.costoUnit,
         item.fechaExpiracion,
+        item.sku,
       ]);
       row.eachCell((cell) => {
         cell.style = estiloDato;
