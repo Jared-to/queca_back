@@ -44,6 +44,7 @@ export class AjustesInventario {
         productoId,
         sku: codigo_barras ? codigo_barras : sku,
         costoUnit: Number(costoUnit.toFixed(4)),
+        fechaExpiracion: inv.fechaExpiracion,
       });
 
       // Registrar movimiento
@@ -65,6 +66,7 @@ export class AjustesInventario {
         productoId,
         sku,
         costoUnit: Number(costoUnit.toFixed(4)),
+        fechaExpiracion: inv.fechaExpiracion,
       });
 
       await this.movimientosService.registrarSalida({

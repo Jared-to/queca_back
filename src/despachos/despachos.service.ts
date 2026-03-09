@@ -64,6 +64,7 @@ export class TraspasosService {
           productoId: inventarioOrigen.product.id,
           sku: inventarioOrigen.sku,
           costoUnit: costoUnitOrigen, // usar PPP origen
+          fechaExpiracion: inventarioOrigen.fechaExpiracion
         }, queryRunner);
 
         await this.movimientosService.registrarSalidaTransaccional({
@@ -99,6 +100,8 @@ export class TraspasosService {
           productoId: inventarioOrigen.product.id,
           sku: inventarioOrigen.sku,
           costoUnit: Number(costoUnitDestino.toFixed(4)),
+          fechaExpiracion: inventarioOrigen.fechaExpiracion
+
         }, queryRunner);
 
         await this.movimientosService.registrarIngresoTransaccional({
@@ -204,6 +207,8 @@ export class TraspasosService {
           productoId: inv.product.id,
           sku: inv.sku,
           costoUnit: detalle.costoUnit,
+          fechaExpiracion: inv.fechaExpiracion
+
         }, queryRunner);
 
         // Movimientos de reversión
@@ -253,6 +258,7 @@ export class TraspasosService {
           productoId: inv.product.id,
           sku: inv.sku,
           costoUnit: costoUnitOrigen,
+          fechaExpiracion: inv.fechaExpiracion
         }, queryRunner);
 
         // Agregar al nuevo destino y recalcular PPP si ya hay stock
@@ -359,7 +365,8 @@ export class TraspasosService {
             cantidad: detalle.cantidad,
             sku: inventario.sku,
             productoId: inventario.product.id,
-            costoUnit: inventario.costoUnit
+            costoUnit: inventario.costoUnit,
+            fechaExpiracion: inventario.fechaExpiracion
           }, queryRunner);
           //registrar movimiento salida
           await this.movimientosService.registrarSalidaTransaccional({

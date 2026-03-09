@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 
 export class CreateDetalleCompraDto {
@@ -18,6 +18,11 @@ export class CreateDetalleCompraDto {
   @IsNumber()
   precioMinVenta: number;
 
+  @IsString()
+  sku: string;
+
+  @IsDateString()
+  fecha_expiracion: string;
 }
 export class CreateCompraDto {
 

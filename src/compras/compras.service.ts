@@ -1,7 +1,9 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
+import * as moment from 'moment-timezone';
+
 import { CreateCompraDto } from './dto/create-compra.dto';
 import { UpdateCompraDto } from './dto/update-compra.dto';
-import { DataSource, Repository } from 'typeorm';
 import { InventarioService } from 'src/inventario/inventario.service';
 import { Almacen } from 'src/almacenes/entities/almacen.entity';
 import { Compra } from './entities/compra.entity';
@@ -9,7 +11,6 @@ import { Inventario } from 'src/inventario/entities/inventario.entity';
 import { MovimientosAlmacenService } from 'src/inventario/service/movimientos-almacen.service';
 import { DetalleCompra } from './entities/detalle-compra.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HistorialPrecio } from 'src/productos/entities/registros-cambio-precio.entity';
 import { ProductosService } from 'src/productos/productos.service';
 
 @Injectable()
@@ -85,8 +86,9 @@ export class ComprasService {
             almacenId: almaceDestino.id,
             cantidad: cantidadCompra,
             productoId: inventario.product.id,
-            sku: inventario.sku,
-            costoUnit: nuevoCostoUnit
+            sku: element.sku,
+            costoUnit: nuevoCostoUnit,
+            fechaExpiracion: moment(element.fecha_expiracion).tz("America/La_Paz").toDate(),
           },
           queryRunner,
         );
@@ -99,7 +101,7 @@ export class ComprasService {
             cantidad: cantidadCompra,
             productoId: inventario.product.id,
             descripcion: 'Ingreso por compra',
-            sku: inventario.sku,
+            sku: element.sku,
             costoUnit: nuevoCostoUnit,
             inventario: inventarioI
           },
@@ -113,6 +115,8 @@ export class ComprasService {
           precioCompra,
           precioMinVenta: element.precioMinVenta,
           precioVenta: element.precioVenta,
+          fechaExpiracion: element.fecha_expiracion,
+          sku: element.sku,
           compra: compraGuardada,
         });
 
@@ -302,6 +306,9 @@ export class ComprasService {
           const cambioPrecioMinVenta =
             item.precioMinVenta !== detalleExistente.precioMinVenta;
 
+          const cambioCodigoBarras =
+            item.sku !== detalleExistente.sku;
+
           const hayCambioPrecio =
             cambioPrecioCompra || cambioPrecioVenta || cambioPrecioMinVenta;
 
@@ -329,13 +336,15 @@ export class ComprasService {
             const stockActual = inventario.stock;
             const costoActual = inventario.costoUnit;
 
+            const nuevoStock = stockActual + diferencia;
+
             const nuevoPPP =
-              (
-                stockActual * costoActual +
-                diferencia * item.precioCompra
-              ) / (stockActual + diferencia);
-
-
+              nuevoStock <= 0
+                ? item.precioCompra
+                : (
+                  stockActual * costoActual +
+                  diferencia * item.precioCompra
+                ) / nuevoStock;
 
 
             const inventarioI = await this.inventarioService.agregarStockTransaccional(
@@ -343,8 +352,8 @@ export class ComprasService {
                 almacenId: compra.almacen.id,
                 cantidad: diferencia,
                 productoId: inventario.product.id,
-                sku: inventario.sku,
-                fechaExpiracion: inventario.fechaExpiracion,
+                sku: item.sku,
+                fechaExpiracion: moment(item.fecha_expiracion).tz("America/La_Paz").toDate(),
                 costoUnit: Number(nuevoPPP.toFixed(4))
               },
               queryRunner,
@@ -356,7 +365,7 @@ export class ComprasService {
                 cantidad: diferencia,
                 productoId: inventario.product.id,
                 descripcion: 'Ajuste positivo por actualización de compra',
-                sku: inventario.sku,
+                sku: item.sku,
                 costoUnit: Number(nuevoPPP.toFixed(4)),
                 inventario: inventarioI
               },
@@ -391,6 +400,13 @@ export class ComprasService {
             );
           }
 
+          if (cambioCodigoBarras && (diferencia === 0 || diferencia < 0)) {
+
+            inventario.sku = item.sku;
+            inventario.fechaExpiracion = moment(item.fecha_expiracion).tz("America/La_Paz").toDate();
+            await queryRunner.manager.save(inventario)
+          }
+
           // 🟣 CAMBIO DE PRECIOS + STOCK
           if (hayCambioPrecio) {
             await this.productoService.cambiarPrecioProductoTransaccion(
@@ -405,6 +421,8 @@ export class ComprasService {
           detalleExistente.precioCompra = item.precioCompra;
           detalleExistente.precioVenta = item.precioVenta;
           detalleExistente.precioMinVenta = item.precioMinVenta;
+          detalleExistente.sku = item.sku;
+          detalleExistente.fechaExpiracion = moment(item.fecha_expiracion).tz("America/La_Paz").toDate();
 
           await queryRunner.manager.save(detalleExistente);
           detallesMap.delete(item.id_producto);
@@ -464,6 +482,10 @@ export class ComprasService {
             precioCompra: item.precioCompra,
             precioMinVenta: item.precioMinVenta,
             precioVenta: item.precioVenta,
+            sku: item.sku,
+            fechaExpiracion: moment(item.fecha_expiracion)
+              .tz("America/La_Paz")
+              .toDate(),
           });
 
           await queryRunner.manager.save(nuevoDetalle);
@@ -540,7 +562,7 @@ export class ComprasService {
         const inv = detalle.inventario;
 
         // ➖ Salida de inventario (se devuelve lo ingresado por la compra)
-      const inventarioS =   await this.inventarioService.descontarStockTransaccional(
+        const inventarioS = await this.inventarioService.descontarStockTransaccional(
           {
             almacenId: compra.almacen.id,
             cantidad: Number(detalle.cantidad),
@@ -561,7 +583,7 @@ export class ComprasService {
             descripcion: 'Salida por eliminación de compra',
             sku: inv.sku,
             costoUnit: inv.costoUnit,
-            inventario:inventarioS
+            inventario: inventarioS
           },
           queryRunner,
         );

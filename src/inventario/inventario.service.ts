@@ -30,12 +30,11 @@ export class InventarioService {
     })
   }
 
-
   async agregarStock(createInventarioDto: CreateInventarioDto): Promise<Inventario> {
     const { almacenId, cantidad, productoId, sku, fechaExpiracion, costoUnit } = createInventarioDto;
 
     let inventario = await this.inventarioRepository.findOne({
-      where: { almacen: { id: almacenId }, product: { id: productoId }, sku },
+      where: { almacen: { id: almacenId }, product: { id: productoId } },
     });
 
     if (!inventario) {
@@ -52,6 +51,8 @@ export class InventarioService {
     } else {
       inventario.stock = inventario.stock + Number(cantidad);
       inventario.costoUnit = costoUnit;
+      inventario.sku = sku;
+      inventario.fechaExpiracion = fechaExpiracion;
     }
 
     // Guardar en la base de datos
@@ -70,6 +71,24 @@ export class InventarioService {
       throw new NotFoundException('No se encontro el inventario.');
     } else {
       inventario.fechaExpiracion = fechaExpiracion;
+    }
+
+    // Guardar en la base de datos
+    await this.inventarioRepository.save(inventario);
+
+    return inventario; // Retornar el inventario actualizado
+  }
+
+  async cambiarCodigoBarras(id_inventario: string, codigo_barras: string): Promise<Inventario> {
+
+    let inventario = await this.inventarioRepository.findOne({
+      where: { id: id_inventario },
+    });
+
+    if (!inventario) {
+      throw new NotFoundException('No se encontro el inventario.');
+    } else {
+      inventario.sku = codigo_barras;
     }
 
     // Guardar en la base de datos
@@ -157,7 +176,6 @@ export class InventarioService {
       where: {
         almacen: { id: almacenId },
         product: { id: productoId },
-        sku
       },
       relations: ['almacen']
     });
@@ -176,6 +194,8 @@ export class InventarioService {
     } else {
       inventario.stock += Number(cantidad);
       inventario.costoUnit = costoUnit;
+      inventario.sku = sku;
+      inventario.fechaExpiracion = fechaExpiracion
     }
 
 

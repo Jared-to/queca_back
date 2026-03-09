@@ -634,6 +634,7 @@ Revisa en *https://almacen-luz.comercio.bo*
         productoId: id_product,
         sku,
         costoUnit: inventario.costoUnit,
+        fechaExpiracion:inventario.fechaExpiracion
       }, queryRunner);
       await this.movimientosService.registrarSalidaTransaccional({
         almacenId: almacen,
@@ -651,6 +652,7 @@ Revisa en *https://almacen-luz.comercio.bo*
         productoId: id_product,
         sku,
         costoUnit: inventario.costoUnit,
+        fechaExpiracion:inventario.fechaExpiracion
       }, queryRunner);
       await this.movimientosService.registrarIngresoTransaccional({
         almacenId: almacen,

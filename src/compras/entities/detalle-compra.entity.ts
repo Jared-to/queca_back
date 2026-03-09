@@ -13,6 +13,12 @@ export class DetalleCompra {
   @JoinColumn({ name: 'inventario_id' })
   inventario: Inventario;
 
+  @Column('text')
+  sku: string;
+
+  @Column('date', { nullable: true })
+  fechaExpiracion: Date;
+
   @Column('float')
   cantidad: number;
 

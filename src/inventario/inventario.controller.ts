@@ -38,6 +38,13 @@ export class InventarioController {
     return this.inventarioService.cambiarFechaExpiracion(id_inventario, fechaExpiracion);
   }
 
+  @Post('cambiar-codigo-barras')
+  @Auth(ValidRoles.admin)
+  cambiarCodigoBarras(@Body() body: { codigo_barras: string, id_inventario: string }) {
+    const { codigo_barras, id_inventario } = body
+    return this.inventarioService.cambiarCodigoBarras(id_inventario, codigo_barras);
+  }
+
 
   @Get()
   @Auth(ValidRoles.admin, ValidRoles.user)
