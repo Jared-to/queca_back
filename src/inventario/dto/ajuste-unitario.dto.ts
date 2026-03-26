@@ -6,8 +6,8 @@ export class AjusteUnitarioDto {
   @IsUUID()
   productoId: string;
 
-  @IsUUID()
-  almacen: string;
+  // @IsUUID()
+  // almacen: string;
 
   @IsString()
   sku: string;

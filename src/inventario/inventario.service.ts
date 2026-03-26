@@ -49,7 +49,7 @@ export class InventarioService {
         costoUnit
       });
     } else {
-      inventario.stock = inventario.stock + Number(cantidad);
+      inventario.stock = parseFloat((inventario.stock + Number(cantidad)).toFixed(2));
       inventario.costoUnit = costoUnit;
       inventario.sku = sku;
       inventario.fechaExpiracion = fechaExpiracion;
@@ -151,7 +151,7 @@ export class InventarioService {
       throw new Error('No hay suficiente stock disponible para descontar esta cantidad.');
     }
 
-    inventario.stock = inventario.stock - Number(cantidad);
+    inventario.stock = parseFloat((inventario.stock - Number(cantidad))?.toFixed(3));
 
     // Guardar en la base de datos
     await this.inventarioRepository.save(inventario);
@@ -192,7 +192,7 @@ export class InventarioService {
       });
 
     } else {
-      inventario.stock += Number(cantidad);
+      inventario.stock = parseFloat((inventario.stock + Number(cantidad)).toFixed(3));
       inventario.costoUnit = costoUnit;
       inventario.sku = sku;
       inventario.fechaExpiracion = fechaExpiracion
@@ -218,7 +218,7 @@ export class InventarioService {
       throw new Error('No hay suficiente stock disponible para descontar esta cantidad.');
     }
 
-    inventario.stock = parseFloat(inventario.stock.toFixed(2)) - parseFloat(cantidad.toFixed(2));
+    inventario.stock = parseFloat((inventario.stock - parseFloat(cantidad)).toFixed(3));
 
     // Guardar en la base de datos
     await queryRunner.manager.save(Inventario, inventario);
@@ -237,6 +237,7 @@ export class InventarioService {
         'inventario.id AS inventario_id',
         'inventario.stock AS stock',
         'inventario.sku AS sku',
+        'inventario.costoUnit AS costoUnit',
         'producto.id AS producto_id',
         'producto.nombre AS producto_nombre',
         'producto.unidad_medida AS unidad_medida',
@@ -248,9 +249,7 @@ export class InventarioService {
         'producto.estado AS estado',
         'inventario.fechaExpiracion AS fecha_expiracion',
         'categoria.nombre AS categoria_nombre',
-        'almacen.id AS almacen_id',
-        'almacen.nombre AS almacen_nombre',
-        'almacen.ubicacion AS almacen_ubicacion'
+        'categoria.id AS categoria_id',
       ])
       .where('producto.is_delete = :is_delete', { is_delete: false })
       .orderBy('inventario.createDate', 'ASC')
@@ -417,10 +416,10 @@ export class InventarioService {
     return productoInfo
   }
 
-  async obtenerProductoPorAlmacenYProducto(almacenId: string, productoId: string): Promise<Inventario> {
+  async obtenerProductoPorAlmacenYProducto( productoId: string): Promise<Inventario> {
 
     // Consulta para obtener información del producto específico en el almacén
-    const resultado = await this.inventarioRepository.findOne({ where: { almacen: { id: almacenId }, product: { id: productoId } }, relations: ['product'] })
+    const resultado = await this.inventarioRepository.findOne({ where: { product: { id: productoId } }, relations: ['product','almacen'] })
 
 
     return resultado

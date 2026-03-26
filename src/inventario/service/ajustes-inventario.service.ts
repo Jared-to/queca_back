@@ -26,10 +26,10 @@ export class AjustesInventario {
 
 
   async modificarStock(ajustUnit: AjusteUnitarioDto) {
-    const { cantidad, glosa, productoId, tipo, almacen, sku, codigo_barras } = ajustUnit;
+    const { cantidad, glosa, productoId, tipo, sku, codigo_barras } = ajustUnit;
 
     // Obtener inventario actual
-    const inv = await this.inventarioService.obtenerProductoPorAlmacenYProducto(almacen, productoId);
+    const inv = await this.inventarioService.obtenerProductoPorAlmacenYProducto( productoId);
 
     if (!inv) throw new NotFoundException('Inventario no encontrado');
 
@@ -39,7 +39,7 @@ export class AjustesInventario {
 
       // Ingreso en inventario
       const inventarioI = await this.inventarioService.agregarStock({
-        almacenId: almacen,
+        almacenId: inv.almacen.id,
         cantidad,
         productoId,
         sku: codigo_barras ? codigo_barras : sku,
@@ -49,7 +49,7 @@ export class AjustesInventario {
 
       // Registrar movimiento
       await this.movimientosService.registrarIngreso({
-        almacenId: almacen,
+        almacenId: inv.almacen.id,
         cantidad,
         productoId,
         descripcion: glosa,
@@ -61,7 +61,7 @@ export class AjustesInventario {
     } else {
       // Salida de inventario → siempre se toma el PPP actual
       const inventarioS = await this.inventarioService.descontarStock({
-        almacenId: almacen,
+        almacenId: inv.almacen.id,
         cantidad,
         productoId,
         sku,
@@ -70,7 +70,7 @@ export class AjustesInventario {
       });
 
       await this.movimientosService.registrarSalida({
-        almacenId: almacen,
+        almacenId: inv.almacen.id,
         cantidad,
         productoId,
         descripcion: glosa,

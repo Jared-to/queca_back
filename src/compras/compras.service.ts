@@ -144,7 +144,8 @@ export class ComprasService {
   }
 
   async findAll() {
-    return this.compraRepository.find({ relations: ['almacen', 'responsable', 'detalles', 'detalles.inventario',] })
+    return this.compraRepository.find(
+      { order: { fecha: 'DESC' }, relations: ['almacen', 'responsable', 'detalles', 'detalles.inventario',] })
   }
 
   async findOne(id: string) {

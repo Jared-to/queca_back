@@ -23,7 +23,7 @@ async function bootstrap() {
   );
   // Habilitar CORS
   app.enableCors({
-    origin: 'https://laqueca.comercio.bo', // Permite solo este origen
+    origin: '*', // Permite solo este origen
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

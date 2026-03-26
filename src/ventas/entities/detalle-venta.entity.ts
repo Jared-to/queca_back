@@ -33,6 +33,10 @@ export class DetalleVenta {
   cantidad: number;
 
 
+  @Column('float', { nullable: true })
+  costoUnit: number;
+
+
   @Column('text')
   unidad_medida: string;
 

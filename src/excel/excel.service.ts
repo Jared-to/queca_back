@@ -98,6 +98,7 @@ export class ExcelService {
           const cantidad = Number(row['Cantidad']);
           const unidadMedida = row['unidad_medida'];
           const sku = (row['Codigo_barras']);
+          const marca = (row['Marca']);
           const precioVenta = Number(row['Precio']);
           const precioVentaMin = Number(row['Precio Min Venta']);
           const precioCompra = Number(row['Precio Compra']);
@@ -137,6 +138,7 @@ export class ExcelService {
               stock: cantidad.toFixed(2),
               sku: String(sku),
               fechaExpiracion,
+              marca,
               precio_compra: precioCompra.toFixed(2),
               precio_min_venta: precioVentaMin.toFixed(2),
             }, queryRunner);

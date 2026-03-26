@@ -34,6 +34,17 @@ export class VentasController {
 
     return this.ventasService.findAllDates(fechaInicio, fechaFin, user);
   }
+
+  @Get('detalle-venta')
+  @Auth(ValidRoles.admin, ValidRoles.user)
+  async findDetalleVentasByDate(
+    @Query('fechaInicio') fechaInicio: string | 'xx',
+    @Query('fechaFin') fechaFin: string | 'xx',
+    @GetUser() user: User
+  ): Promise<Venta[]> {
+
+    return this.ventasService.findDetalleVentasByDate(fechaInicio, fechaFin, user);
+  }
   @Get('chart')
   async getDatosChart(@Query('tipo') tipo: 'semana' | 'mes' | 'todo') {
     return this.ventasService.obtenerDatosVentas(tipo || 'semana');

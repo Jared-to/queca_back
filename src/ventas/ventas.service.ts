@@ -86,6 +86,7 @@ export class VentasService {
           unidad_medida: detalle.unidad_medida,
           nombreProducto: inventario.product.nombre,
           marca: inventario.product.marca,
+          costoUnit: inventario.costoUnit || 0,
           venta: ventaGuardada,
         });
         // Guardar los detalles de la venta con el query runner
@@ -275,6 +276,7 @@ Revisa en *https://laqueca.comercio.bo/*
             inventario: { id: inventario.id },
             nombreProducto: inventario.product.nombre,
             marca: inventario.product.marca,
+            costoUnit: inventario.costoUnit || 0,
           });
 
           const detalleGuardado = await queryRunner.manager.save(detalleG);
@@ -377,7 +379,60 @@ Revisa en *https://laqueca.comercio.bo/*
     });
   }
 
+  async findDetalleVentasByDate(
+    fechaInicio: string | 'xx',
+    fechaFin: string | 'xx',
+    user: User
+  ): Promise<any[]> {
 
+    const isAdmin = user?.roles?.some(r => r === 'admin') ?? false;
+
+    const qb = this.detallesRepository
+      .createQueryBuilder('detalle')
+      .innerJoin('detalle.venta', 'venta')
+      .innerJoin('venta.vendedor', 'vendedor')
+      .innerJoin('detalle.inventario', 'inventario')
+      .innerJoin('inventario.product', 'producto')
+      .innerJoin('producto.categoria', 'categoria')
+      .select([
+        'detalle.id AS "idDetalle"',
+        'detalle.cantidad AS "cantidad"',
+        'detalle.precio AS "precio"',
+        'detalle.subtotal AS "subtotal"',
+        'venta.fecha AS "fecha"',
+        'categoria.id AS "categoria_id"',
+        'categoria.nombre AS "categoria_nombre"',
+        'producto.nombre AS "productoNombre"',
+        'producto.precioVentaMin AS "precio_minimo"',
+        'producto.id AS "productoId"',
+        'producto.unidad_medida AS "unidad_medida"',
+        'vendedor.fullName AS "vendedorNombre"',
+      ])
+      .orderBy('venta.fecha', 'ASC');
+
+    // 🔐 Filtro por vendedor
+    if (user && !isAdmin) {
+      qb.andWhere('vendedor.id = :userId', { userId: user.id });
+    }
+
+    // 📅 Filtros de fecha
+    if (fechaInicio !== 'xx' && fechaFin !== 'xx') {
+      qb.andWhere(
+        'DATE(venta.fecha) BETWEEN DATE(:inicio) AND DATE(:fin)',
+        { inicio: fechaInicio, fin: fechaFin }
+      );
+    } else if (fechaInicio !== 'xx') {
+      qb.andWhere('DATE(venta.fecha) >= DATE(:inicio)', {
+        inicio: fechaInicio,
+      });
+    } else if (fechaFin !== 'xx') {
+      qb.andWhere('DATE(venta.fecha) <= DATE(:fin)', {
+        fin: fechaFin,
+      });
+    }
+
+    return qb.getRawMany();
+  }
 
   async findOne(id: string): Promise<Venta> {
     const venta = await this.ventasRepository.findOne({
@@ -625,7 +680,7 @@ Revisa en *https://laqueca.comercio.bo/*
     return { pData, xLabels };
   }
   private async registrarMovimiento(detalle: DetalleVenta, id_product: string, tipo: string, descripcion: string, almacen: string, sku: string, queryRunner: QueryRunner): Promise<void> {
-    const inventario = await this.inventarioService.obtenerProductoPorAlmacenYProducto(almacen, id_product);
+    const inventario = await this.inventarioService.obtenerProductoPorAlmacenYProducto(id_product);
 
     if (tipo === 'venta') {
       const inventarioS = await this.inventarioService.descontarStockTransaccional({
